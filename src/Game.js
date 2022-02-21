@@ -1,24 +1,126 @@
 import Board from "./Board"
 import React from "react";
 
-function calculateWinner(squares) {
-    const lines = [
-      [0, 1, 2],
-      [3, 4, 5],
-      [6, 7, 8],
-      [0, 3, 6],
-      [1, 4, 7],
-      [2, 5, 8],
-      [0, 4, 8],
-      [2, 4, 6],
-    ];
-    for (let i = 0; i < lines.length; i++) {
-      const [a, b, c] = lines[i];
-      if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-        return squares[a];
+function calculateWinner(squares,nboard) {
+  // console.log(nboard)  
+  const lines = [];
+  let index = 0;
+  let startlines = 0;
+  nboard = parseInt(nboard);
+  const pattern = parseInt((nboard*2)+2) // รูปแบบของการชนะ
+  
+  for (let i = startlines ; i <= pattern-startlines-2 ; i++){
+    lines.push([])
+    // แนวนอน
+    for(let j = index ; j < nboard * nboard ; j++){
+      console.log("index " +index)
+      // lines[i].push(nboard-(j+1));
+      // console.log(nboard-(j+1))
+      lines[i].push(j);
+      // console.log(lines[i])
+      if(j % nboard == nboard-1){ // หาเเถวต่อไป
+        // console.log("break")
+        break;
       }
     }
-    return null;
+    index = parseInt(index) + parseInt(nboard); //หาแถวต่อไปเหมือนกัน
+    // console.log("B"+startlines)
+    startlines++;
+    // console.log("A"+startlines)
+    console.log("lines นอน " + lines[i])
+  }
+
+  // console.log(startlines)
+  // แนวตั้ง
+  startlines = parseInt(nboard);
+  index = 0;
+  if(nboard == 3){
+    for (let i = startlines ; i <= pattern-startlines; i++){
+      lines.push([])
+      for(let j = index ; j < nboard * nboard ; j+=parseInt(nboard)){
+        lines[i].push(j); 
+        console.log(j)
+      }
+      index = index + 1;
+      console.log("index " + index)
+      console.log("i "+ i)
+      console.log("lines ตั้ง " + lines[i])
+    }
+  }
+  else{
+    for (let i = startlines ; i <= pattern-startlines+1; i++){
+      lines.push([])
+      for(let j = index ; j < nboard * nboard ; j+=parseInt(nboard)){
+        lines[i].push(j); 
+        console.log(j)
+      }
+      index = index + 1;
+      console.log("index " + index)
+      console.log("i "+ i)
+      console.log("lines ตั้ง " + lines[i])
+    }
+  }
+
+  // แนวทเเยงขวา
+  startlines = nboard * 2;
+  index = 0;
+  for(let i = startlines ; i == parseInt(nboard*2) ; i++){
+    lines.push([])
+    for(let j = parseInt(index) ; j < nboard * nboard ; j+=parseInt(nboard+1)){
+      // console.log("this : " + j);
+      lines[i].push(j);
+    }
+    console.log("lines ทแยงขวา " + lines[i])
+  }
+
+  // แนวทเเยงซ้าย
+  startlines = parseInt(nboard * 2 + 1);
+  index = parseInt(nboard)-1;
+  for(let i = startlines ; i == nboard *2 +1 ; i++){
+    lines.push([])
+    for(let j = index ; j <= nboard*(nboard - 1) ; j+=parseInt(nboard-1)){
+      lines[i].push(j);
+    }
+    console.log("lines ทแยงซ้าย " + lines[i])
+  }
+
+  console.log(lines)
+  
+  // นำ lines มาเช็คเงื่อนไขต่อว่าเหมือนกัน?
+  let count_x = 0;
+  let count_o = 0;
+
+  for(let i = 0; i < lines.length-1 ; i++){
+    console.log(lines[i])
+    for(let j = 1; j < lines[i].length ; j++){ // เทียบที่ index 0 เสมอ
+      if(squares[lines[i][0]] == "X" && squares[lines[i][0]] === squares[lines[i][j]] ){
+        count_x++;
+        if(count_x == nboard - 1){
+          console.log("win this X"+lines[i])
+          return "X"
+        }
+      }
+      else{
+        count_x = 0;
+        break;
+      }
+    }
+
+    for(let j = 1; j < lines[i].length ; j++){ // เทียบที่ index 0 เสมอ
+      if(squares[lines[i][0]] == "O" && squares[lines[i][0]] === squares[lines[i][j]] ){
+        count_o++;
+        if(count_o == nboard - 1){
+          console.log("win this O"+lines[i])
+          return "O"
+        }
+      }
+      else{
+        count_x = 0;
+        break;
+      }
+    }
+  }
+  return null;
 }
 
 
@@ -32,14 +134,16 @@ class Game extends React.Component {
           }],
           stepNumber: 0,
           xIsNext: true,
+          value: 3
         };
+        this.handleChange = this.handleChange.bind(this);
     }
 
     handleClick(i) {
         const history = this.state.history.slice(0, this.state.stepNumber + 1);
         const current = history[history.length - 1];
         const squares = current.squares.slice();
-        if (calculateWinner(squares) || squares[i]) {
+        if (calculateWinner(squares,this.state.value) || squares[i]) {
           return;
         }
         squares[i] = this.state.xIsNext ? 'X' : 'O';
@@ -54,15 +158,28 @@ class Game extends React.Component {
 
     jumpTo(step) {
       this.setState({
+
         stepNumber: step,
         xIsNext: (step % 2) === 0,
       });
     }
 
+    handleChange(event) {
+      let n = parseInt(event.target.value);
+      this.setState({
+        history: [{
+          squares: Array(n * n).fill(null),
+        }],
+        stepNumber: 0,
+        xIsNext: true,
+        value: event.target.value});
+      // console.log(event.target.value)
+    }
+
     render() {
         const history = this.state.history;
         const current = history[this.state.stepNumber];
-        const winner = calculateWinner(current.squares);
+        const winner = calculateWinner(current.squares,this.state.value);
 
         const moves = history.map((step, move) => {
           const desc = move ?
@@ -83,11 +200,19 @@ class Game extends React.Component {
         }
 
         return (
+
             <div className="game">
+              <form>
+                <label>
+                  n board:
+                  <input type="number" name="nInput" value={this.state.value} onChange={this.handleChange}/>
+                </label>
+              </form>
               <div className="game-board">
                 <Board
                   squares={current.squares}
                   onClick={(i) => this.handleClick(i)}
+                  nboard = {this.state.value}
                 />
               </div>
               <div className="game-info">

@@ -9,7 +9,7 @@ function calculateWinner(squares,nboard) {
   nboard = parseInt(nboard);
   const pattern = parseInt((nboard*2)+2) // รูปแบบของการชนะ
   
-  for (let i = startlines ; i <= pattern-startlines-2 ; i++){
+  for (let i = startlines ; i < nboard ; i++){
     lines.push([])
     // แนวนอน
     for(let j = index ; j < nboard * nboard ; j++){
@@ -24,6 +24,7 @@ function calculateWinner(squares,nboard) {
       }
     }
     index = parseInt(index) + parseInt(nboard); //หาแถวต่อไปเหมือนกัน
+    console.log("Index "+index)
     // console.log("B"+startlines)
     startlines++;
     // console.log("A"+startlines)
@@ -60,29 +61,44 @@ function calculateWinner(squares,nboard) {
       console.log("lines ตั้ง " + lines[i])
     }
   }
-
-  // แนวทเเยงขวา
-  startlines = nboard * 2;
-  index = 0;
-  for(let i = startlines ; i == parseInt(nboard*2) ; i++){
-    lines.push([])
-    for(let j = parseInt(index) ; j < nboard * nboard ; j+=parseInt(nboard+1)){
-      // console.log("this : " + j);
-      lines[i].push(j);
-    }
-    console.log("lines ทแยงขวา " + lines[i])
-  }
+  
 
   // แนวทเเยงซ้าย
-  startlines = parseInt(nboard * 2 + 1);
-  index = parseInt(nboard)-1;
-  for(let i = startlines ; i == nboard *2 +1 ; i++){
-    lines.push([])
-    for(let j = index ; j <= nboard*(nboard - 1) ; j+=parseInt(nboard-1)){
-      lines[i].push(j);
-    }
-    console.log("lines ทแยงซ้าย " + lines[i])
+  // startlines = nboard * 2;
+  index = 0;
+  let temp = [];
+  for(let j = parseInt(index) ; j < nboard * nboard ; j+=parseInt(nboard+1)){
+    // console.log("this : " + j);
+    temp.push(j);
   }
+  lines.push(temp);
+  // for(let i = startlines ; i == parseInt(nboard*2) ; i++){
+  //   lines.push([])
+  //   for(let j = parseInt(index) ; j < nboard * nboard ; j+=parseInt(nboard+1)){
+  //     // console.log("this : " + j);
+  //     temp.push(j);
+  //   }
+  //   console.log("lines ทแยงขวา " + lines[i])
+  // }
+
+  // แนวทเเยงขวา
+  // startlines = nboard * 2;
+  index = nboard-1;
+  temp = [];
+  for(let j = parseInt(index) ; j <= nboard*(nboard - 1) ; j+=parseInt(nboard-1)){
+    // console.log("this : " + j);
+    temp.push(j);
+  }
+  lines.push(temp);
+  // startlines = parseInt(nboard * 2 + 1);
+  // index = parseInt(nboard)-1;
+  // for(let i = startlines ; i == nboard *2 +1 ; i++){
+  //   lines.push([])
+  //   for(let j = index ; j <= nboard*(nboard - 1) ; j+=parseInt(nboard-1)){
+  //     lines[i].push(j);
+  //   }
+  //   console.log("lines ทแยงซ้าย " + lines[i])
+  // }
 
   console.log(lines)
   
@@ -90,8 +106,11 @@ function calculateWinner(squares,nboard) {
   let count_x = 0;
   let count_o = 0;
 
-  for(let i = 0; i < lines.length-1 ; i++){
+  for(let i = 0; i < lines.length ; i++){
     console.log(lines[i])
+    // if( lines[i].length == 0){
+    //   continue;
+    // }
     for(let j = 1; j < lines[i].length ; j++){ // เทียบที่ index 0 เสมอ
       if(squares[lines[i][0]] == "X" && squares[lines[i][0]] === squares[lines[i][j]] ){
         count_x++;

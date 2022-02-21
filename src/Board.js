@@ -5,7 +5,8 @@ class Board extends React.Component {
 
   constructor(props) {
     super(props);
-    this.state = {value: '3'};
+    this.state = {value: "3" }; //default board
+    this.handleChange = this.handleChange.bind(this);
 }
 
   renderSquare(i) {
@@ -13,6 +14,7 @@ class Board extends React.Component {
       <Square
         value={this.props.squares[i]}
         onClick={() => this.props.onClick(i)}
+        key={i} //prevent click on box and change all boxes
       />
     );
   }
@@ -21,47 +23,38 @@ class Board extends React.Component {
     this.setState({value: event.target.value});
   }
 
-  handleSubmit(event) {
-    event.preventDefault();
-    console.log(event.target.Ninput.value)
-  }
-
   runCallback = () => {
-    const n = [];
+    const board_row = [];
+    const total_html = [];
+    let index = 0;
     for (var i = 0; i < this.state.value ; i++){
-      n.push(<div className="board-row" key={i}>);
-      for (var j = 0 ; j < this.state.value ; j++){
-        n.push({this.renderSquare(j)});
+      board_row.push([])
+      total_html.push(<div className="board-row" key={i}>
+      {board_row[i]}
+      </div>)
+      for( var j = 0 ; j < this.state.value ; j++){
+        board_row[i].push(this.renderSquare(index));
+        index++;
       }
-      n.push(</div>)
     }
-    return n;
+
+    return total_html;
   }
 
   render() {  
+    let call = this.runCallback()
       return (
         
         <div>
-          <form onSubmit={this.handleSubmit}>
+          <form>
               <label>
                 n board:
-                <input type="number" name="Ninput"value={this.props.value} required onChange={this.handleChange} />
+                <input type="number" name="Ninput" value={this.props.value} required onChange={this.handleChange}/>
               </label>
-              <input type="submit" value="Submit" />
+
           </form>
-          {
-            runCallback(() => {
-              const n = [];
-              for (var i = 0; i < this.state.value ; i++){
-                n.push(<div className="board-row" key={i}>);
-                for (var j = 0 ; j < this.state.value ; j++){
-                  n.push({this.renderSquare(j)});
-                }
-                n.push(</div>)
-              }
-              return n;
-            })
-          }
+
+          {call}
         </div>
       );
   }

@@ -1,4 +1,5 @@
 import Board from "./Board"
+import InputForm from "./InputForm"
 import React from "react";
 
 function calculateWinner(squares) {
@@ -85,6 +86,7 @@ class Game extends React.Component {
         return (
             <div className="game">
               <div className="game-board">
+                {/* <InputForm /> */}
                 <Board
                   squares={current.squares}
                   onClick={(i) => this.handleClick(i)}
